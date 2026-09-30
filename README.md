@@ -106,6 +106,7 @@ Pertemuan 2/
 ├── image_operations.py  # Modul inti rumus operasi citra & inspeksi matriks
 ├── generate_samples.py  # Script pembuat citra contoh (sample A & B)
 ├── requirements.txt     # Daftar dependensi modul Python
+├── packages.txt         # Paket sistem Linux untuk Streamlit Cloud
 ├── samples/             # Direktori gambar sampel pengujian
 └── README.md            # Dokumentasi & panduan
 ```
