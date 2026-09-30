@@ -1,0 +1,6 @@
+# Requirements for Praktikum Pengolahan Citra Digital - Pertemuan 2
+numpy>=1.22.0
+opencv-python>=4.6.0
+Pillow>=9.0.0
+streamlit>=1.20.0
+matplotlib>=3.5.0

@@ -8,6 +8,15 @@ Aplikasi interaktif Python untuk mempelajari dan mempraktikkan:
 
 ---
 
+## 📦 Instalasi Dependensi
+
+Pastikan modul pendukung sudah terinstall dengan menjalankan:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## 🚀 Cara Menjalankan Aplikasi
 
 Tersedia **2 Pilihan Antarmuka**:
@@ -96,6 +105,7 @@ Pertemuan 2/
 ├── app_streamlit.py     # Aplikasi Web Interaktif (Streamlit)
 ├── image_operations.py  # Modul inti rumus operasi citra & inspeksi matriks
 ├── generate_samples.py  # Script pembuat citra contoh (sample A & B)
+├── requirements.txt     # Daftar dependensi modul Python
 ├── samples/             # Direktori gambar sampel pengujian
 └── README.md            # Dokumentasi & panduan
 ```
