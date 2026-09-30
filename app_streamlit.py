@@ -74,6 +74,13 @@ def get_sample_image(name, is_mask=False):
             bgr = sa if "sample_a" in name else sb
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
+def display_image(image, caption=None):
+    """Menampilkan gambar secara kompatibel di semua versi Streamlit (lama maupun baru)."""
+    try:
+        st.image(image, use_container_width=True, caption=caption)
+    except TypeError:
+        st.image(image, use_column_width=True, caption=caption)
+
 # -------------------------------------------------------------
 # SIDEBAR: 1. MENU INPUT & UPLOAD GAMBAR (FLEKSIBEL)
 # -------------------------------------------------------------
@@ -337,18 +344,18 @@ col_img1, col_img2, col_img3 = st.columns(3)
 
 with col_img1:
     st.subheader("1️⃣ Citra Asli (A)")
-    st.image(img_a, use_container_width=True, caption=f"Citra A ({img_a.shape[1]}x{img_a.shape[0]})")
+    display_image(img_a, caption=f"Citra A ({img_a.shape[1]}x{img_a.shape[0]})")
 
 with col_img2:
     st.subheader("2️⃣ Citra B / Masker")
     if category == "⚡ Operasi Logika (Boolean)" and logic_source == "Masker Geometris Biner":
-        st.image(second_img, use_container_width=True, caption=f"Masker Biner ({mask_type})")
+        display_image(second_img, caption=f"Masker Biner ({mask_type})")
     else:
-        st.image(img_b, use_container_width=True, caption=f"Citra B ({img_b.shape[1]}x{img_b.shape[0]})")
+        display_image(img_b, caption=f"Citra B ({img_b.shape[1]}x{img_b.shape[0]})")
 
 with col_img3:
     st.subheader("3️⃣ Citra Hasil Pemrosesan")
-    st.image(img_result, use_container_width=True, caption="Citra Hasil Operasi")
+    display_image(img_result, caption="Citra Hasil Operasi")
 
 
 # -------------------------------------------------------------
@@ -445,8 +452,24 @@ with col_math:
 
     p_a_val = img_a[y_sel, x_sel]
     p_res_val = img_result[y_sel, x_sel]
+
+    if len(img_a.shape) == 3:
+        gray_a = int(round(0.299 * int(p_a_val[0]) + 0.587 * int(p_a_val[1]) + 0.114 * int(p_a_val[2])))
+        str_a = f"RGB `{p_a_val.tolist()}` (Grayscale: `{gray_a}`)"
+    else:
+        gray_a = int(p_a_val)
+        str_a = f"Grayscale `{gray_a}`"
+
+    if len(img_result.shape) == 3:
+        gray_res = int(round(0.299 * int(p_res_val[0]) + 0.587 * int(p_res_val[1]) + 0.114 * int(p_res_val[2])))
+        str_res = f"RGB `{p_res_val.tolist()}`"
+    else:
+        gray_res = int(p_res_val)
+        str_res = f"Grayscale `{gray_res}`"
+
     st.markdown(f"""
     **Perubahan Nilai pada Titik ({x_sel}, {y_sel}):**
-    - **Citra Awal (A):** RGB `{p_a_val.tolist()}`
-    - **Citra Hasil:** RGB `{p_res_val.tolist()}`
+    - **Citra Awal (A):** {str_a}
+    - **Citra Hasil:** {str_res}
+    - **Citra Hasil (Grayscale):** `{gray_res}`
     """)

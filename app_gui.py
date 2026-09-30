@@ -896,7 +896,8 @@ class ImageProcessingApp:
         # Original A value at (x,y)
         p_a = self.img_a_original[y, x]
         if len(self.img_a_original.shape) == 3:
-            calc_text += f"Citra A: R={p_a[0]}, G={p_a[1]}, B={p_a[2]}\n"
+            gray_a = int(round(0.299 * p_a[0] + 0.587 * p_a[1] + 0.114 * p_a[2]))
+            calc_text += f"Citra A: RGB [{p_a[0]}, {p_a[1]}, {p_a[2]}] (Gray: {gray_a})\n"
         else:
             calc_text += f"Citra A: Gray={p_a}\n"
 
@@ -904,7 +905,9 @@ class ImageProcessingApp:
         if self.img_result is not None:
             p_res = self.img_result[y, x]
             if len(self.img_result.shape) == 3:
-                calc_text += f"Citra Hasil: R={p_res[0]}, G={p_res[1]}, B={p_res[2]}\n"
+                gray_res = int(round(0.299 * p_res[0] + 0.587 * p_res[1] + 0.114 * p_res[2]))
+                calc_text += f"Citra Hasil: RGB [{p_res[0]}, {p_res[1]}, {p_res[2]}]\n"
+                calc_text += f"Citra Hasil (Grayscale): {gray_res}\n"
             else:
                 calc_text += f"Citra Hasil: Gray={p_res}\n"
 
