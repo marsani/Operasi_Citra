@@ -53,9 +53,26 @@ st.markdown("""
 st.markdown('<div class="main-header">🖼️ Pengolahan Citra Digital - Praktikum Pertemuan 2</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Materi: Operasi Piksel (Aras Titik) | Operasi Aritmatika Citra | Operasi Logika (Boolean) | Inspeksi Matriks Piksel</div>', unsafe_allow_html=True)
 
-# Pastikan sampel gambar tersedia
-if not os.path.exists("samples/sample_a.jpg") or not os.path.exists("samples/sample_b.jpg"):
-    import generate_samples
+import generate_samples
+
+# Pastikan sampel gambar selalu dibuat jika belum ada
+generate_samples.generate_all_samples()
+
+def get_sample_image(name, is_mask=False):
+    path = os.path.join("samples", name)
+    if not os.path.exists(path):
+        generate_samples.generate_all_samples()
+    if is_mask:
+        m = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        if m is None:
+            _, _, m = generate_samples.generate_all_samples()
+        return cv2.cvtColor(m, cv2.COLOR_GRAY2RGB)
+    else:
+        bgr = cv2.imread(path)
+        if bgr is None:
+            sa, sb, _ = generate_samples.generate_all_samples()
+            bgr = sa if "sample_a" in name else sb
+        return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
 # -------------------------------------------------------------
 # SIDEBAR: 1. MENU INPUT & UPLOAD GAMBAR (FLEKSIBEL)
@@ -85,8 +102,7 @@ if input_mode == "📁 Upload Gambar Sendiri (Bisa Diganti)":
         st.sidebar.success(f"✅ Citra A: `{file_a.name}` ({img_a.shape[1]}x{img_a.shape[0]})")
     else:
         # Default fallback ke sample A jika belum upload
-        img_a_bgr = cv2.imread("samples/sample_a.jpg")
-        img_a = cv2.cvtColor(img_a_bgr, cv2.COLOR_BGR2RGB)
+        img_a = get_sample_image("sample_a.jpg")
         st.sidebar.info("ℹ️ Citra A: Menggunakan Sampel A (Upload file Anda di atas untuk mengganti).")
 
     # Load Citra B
@@ -96,29 +112,26 @@ if input_mode == "📁 Upload Gambar Sendiri (Bisa Diganti)":
         st.sidebar.success(f"✅ Citra B: `{file_b.name}` ({img_b.shape[1]}x{img_b.shape[0]})")
     else:
         # Default fallback ke sample B jika belum upload
-        img_b_bgr = cv2.imread("samples/sample_b.jpg")
-        img_b = cv2.cvtColor(img_b_bgr, cv2.COLOR_BGR2RGB)
+        img_b = get_sample_image("sample_b.jpg")
         st.sidebar.info("ℹ️ Citra B: Menggunakan Sampel B (Upload file Anda di atas untuk mengganti).")
 
 else:
     # Gunakan preset sampel bawaan
     sample_choice_a = st.sidebar.selectbox("Pilih Sampel Citra A:", ["Sample A (Shapes & Gradient)", "Sample B (Texture)", "Masker Lingkaran"])
     if sample_choice_a == "Sample A (Shapes & Gradient)":
-        img_a = cv2.cvtColor(cv2.imread("samples/sample_a.jpg"), cv2.COLOR_BGR2RGB)
+        img_a = get_sample_image("sample_a.jpg")
     elif sample_choice_a == "Sample B (Texture)":
-        img_a = cv2.cvtColor(cv2.imread("samples/sample_b.jpg"), cv2.COLOR_BGR2RGB)
+        img_a = get_sample_image("sample_b.jpg")
     else:
-        mask_g = cv2.imread("samples/sample_mask.png", cv2.IMREAD_GRAYSCALE)
-        img_a = cv2.cvtColor(mask_g, cv2.COLOR_GRAY2RGB)
+        img_a = get_sample_image("sample_mask.png", is_mask=True)
 
     sample_choice_b = st.sidebar.selectbox("Pilih Sampel Citra B:", ["Sample B (Texture)", "Sample A (Shapes & Gradient)", "Masker Lingkaran"])
     if sample_choice_b == "Sample B (Texture)":
-        img_b = cv2.cvtColor(cv2.imread("samples/sample_b.jpg"), cv2.COLOR_BGR2RGB)
+        img_b = get_sample_image("sample_b.jpg")
     elif sample_choice_b == "Sample A (Shapes & Gradient)":
-        img_b = cv2.cvtColor(cv2.imread("samples/sample_a.jpg"), cv2.COLOR_BGR2RGB)
+        img_b = get_sample_image("sample_a.jpg")
     else:
-        mask_g = cv2.imread("samples/sample_mask.png", cv2.IMREAD_GRAYSCALE)
-        img_b = cv2.cvtColor(mask_g, cv2.COLOR_GRAY2RGB)
+        img_b = get_sample_image("sample_mask.png", is_mask=True)
 
 
 # -------------------------------------------------------------
@@ -324,18 +337,18 @@ col_img1, col_img2, col_img3 = st.columns(3)
 
 with col_img1:
     st.subheader("1️⃣ Citra Asli (A)")
-    st.image(img_a, use_column_width=True, caption=f"Citra A ({img_a.shape[1]}x{img_a.shape[0]})")
+    st.image(img_a, use_container_width=True, caption=f"Citra A ({img_a.shape[1]}x{img_a.shape[0]})")
 
 with col_img2:
     st.subheader("2️⃣ Citra B / Masker")
     if category == "⚡ Operasi Logika (Boolean)" and logic_source == "Masker Geometris Biner":
-        st.image(second_img, use_column_width=True, caption=f"Masker Biner ({mask_type})")
+        st.image(second_img, use_container_width=True, caption=f"Masker Biner ({mask_type})")
     else:
-        st.image(img_b, use_column_width=True, caption=f"Citra B ({img_b.shape[1]}x{img_b.shape[0]})")
+        st.image(img_b, use_container_width=True, caption=f"Citra B ({img_b.shape[1]}x{img_b.shape[0]})")
 
 with col_img3:
     st.subheader("3️⃣ Citra Hasil Pemrosesan")
-    st.image(img_result, use_column_width=True, caption="Citra Hasil Operasi")
+    st.image(img_result, use_container_width=True, caption="Citra Hasil Operasi")
 
 
 # -------------------------------------------------------------
